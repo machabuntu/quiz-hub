@@ -66,15 +66,6 @@
     #searchInput:focus { border-color: rgba(124,58,237,.7); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
     .search-container { position: relative; }
     
-    /* Comments styles */
-    .comments-section { margin-top: 20px; padding: 16px; background: #0b1220; border: 1px solid rgba(148,163,184,.15); border-radius: 12px; }
-    .comment { margin-bottom: 12px; padding: 12px; background: #111827; border-radius: 8px; border-left: 3px solid var(--accent); }
-    .comment-author { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .comment-text { color: var(--text); line-height: 1.4; }
-    .comment-form { margin-top: 16px; }
-    .comment-input { width: 100%; padding: 8px 12px; border: 1px solid rgba(148,163,184,.25); border-radius: 8px; background: #0b1220; color: var(--text); resize: vertical; min-height: 60px; }
-    .comment-submit { margin-top: 8px; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; }
-    .comment-submit:hover { background: #6d28d9; }
     
     /* Export button styles */
     .export-btn { background: linear-gradient(180deg, #22c55e, #16a34a); border: none; color: white; }
@@ -340,9 +331,6 @@
 
       stage.append(box, document.createElement('div'));
       stage.append(chips);
-      
-      // Add comments section
-      addCommentsSection();
     }
 
     async function share() {
@@ -361,86 +349,6 @@
   function setStatus(text){ statusPill.textContent = text; }
   function escapeHtml(s){ return String(s).replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch])); }
 
-  // Comments functionality
-  function addCommentsSection() {
-    const commentsSection = document.createElement('div');
-    commentsSection.className = 'comments-section';
-    commentsSection.innerHTML = `
-      <h3 style="margin: 0 0 16px; color: var(--text);">Комментарии</h3>
-      <div id="commentsList"></div>
-      <div class="comment-form">
-        <textarea id="commentInput" class="comment-input" placeholder="Оставьте анонимный комментарий..."></textarea>
-        <button id="commentSubmit" class="comment-submit">Отправить</button>
-      </div>
-    `;
-    
-    stage.appendChild(commentsSection);
-    
-    // Load existing comments
-    loadComments();
-    
-    // Add event listener for new comment
-    const commentInput = document.getElementById('commentInput');
-    const commentSubmit = document.getElementById('commentSubmit');
-    
-    commentSubmit.onclick = () => addComment();
-    commentInput.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === 'Enter') {
-        addComment();
-      }
-    });
-  }
-
-  function loadComments() {
-    const commentsList = document.getElementById('commentsList');
-    if (!commentsList) return;
-    
-    const comments = getCommentsForTest(currentTestId);
-    commentsList.innerHTML = '';
-    
-    if (comments.length === 0) {
-      commentsList.innerHTML = '<div class="muted">Пока нет комментариев. Будьте первым!</div>';
-      return;
-    }
-    
-    comments.forEach(comment => {
-      const commentDiv = document.createElement('div');
-      commentDiv.className = 'comment';
-      commentDiv.innerHTML = `
-        <div class="comment-author">Аноним • ${new Date(comment.timestamp).toLocaleString('ru-RU')}</div>
-        <div class="comment-text">${escapeHtml(comment.text)}</div>
-      `;
-      commentsList.appendChild(commentDiv);
-    });
-  }
-
-  function addComment() {
-    const commentInput = document.getElementById('commentInput');
-    const text = commentInput.value.trim();
-    
-    if (!text) return;
-    
-    const comment = {
-      text: text,
-      timestamp: Date.now(),
-      testId: currentTestId
-    };
-    
-    saveComment(comment);
-    commentInput.value = '';
-    loadComments();
-  }
-
-  function getCommentsForTest(testId) {
-    const comments = JSON.parse(localStorage.getItem('quizComments') || '[]');
-    return comments.filter(c => c.testId === testId).sort((a, b) => b.timestamp - a.timestamp);
-  }
-
-  function saveComment(comment) {
-    const comments = JSON.parse(localStorage.getItem('quizComments') || '[]');
-    comments.push(comment);
-    localStorage.setItem('quizComments', JSON.stringify(comments));
-  }
 
   // Export functionality
   async function exportResult() {
