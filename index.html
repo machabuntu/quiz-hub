@@ -61,6 +61,24 @@
     }
     .highlight { background: linear-gradient(180deg, #7c3aed, #6d28d9); color:white; border-color: transparent; }
     code.inline { background: rgba(148,163,184,.15); padding:2px 6px; border-radius:8px; }
+    
+    /* Search styles */
+    #searchInput:focus { border-color: rgba(124,58,237,.7); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+    .search-container { position: relative; }
+    
+    /* Comments styles */
+    .comments-section { margin-top: 20px; padding: 16px; background: #0b1220; border: 1px solid rgba(148,163,184,.15); border-radius: 12px; }
+    .comment { margin-bottom: 12px; padding: 12px; background: #111827; border-radius: 8px; border-left: 3px solid var(--accent); }
+    .comment-author { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .comment-text { color: var(--text); line-height: 1.4; }
+    .comment-form { margin-top: 16px; }
+    .comment-input { width: 100%; padding: 8px 12px; border: 1px solid rgba(148,163,184,.25); border-radius: 8px; background: #0b1220; color: var(--text); resize: vertical; min-height: 60px; }
+    .comment-submit { margin-top: 8px; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; }
+    .comment-submit:hover { background: #6d28d9; }
+    
+    /* Export button styles */
+    .export-btn { background: linear-gradient(180deg, #22c55e, #16a34a); border: none; color: white; }
+    .export-btn:hover { background: linear-gradient(180deg, #16a34a, #15803d); }
   </style>
 </head>
 <body>
@@ -75,6 +93,15 @@
     <section class="card" id="listView">
       <h1 class="title">Выберите тест</h1>
       <div class="spacer"></div>
+      
+      <!-- Search bar -->
+      <div class="search-container" style="margin-bottom: 20px;">
+        <input type="text" id="searchInput" placeholder="Поиск тестов по названию или описанию..." 
+               style="width: 100%; padding: 12px 16px; border: 1px solid rgba(148,163,184,.25); 
+                      border-radius: 12px; background: #0b1220; color: var(--text); 
+                      font-size: 14px; outline: none; transition: border-color .18s;">
+      </div>
+      
       <div class="grid" id="testsGrid" aria-live="polite"></div>
     </section>
 
@@ -89,6 +116,7 @@
             <button class="btn" id="btnBack">← Ко всем тестам</button>
             <button class="btn" id="btnRestart">↻ Пройти заново</button>
             <button class="btn" id="btnShare">⧉ Поделиться</button>
+            <button class="btn export-btn" id="btnExport">📷 Сохранить результат</button>
           </div>
         </div>
         <div class="progress"><div id="bar"></div></div>
@@ -112,12 +140,21 @@
   const btnBack = $('#btnBack');
   const btnRestart = $('#btnRestart');
   const btnShare = $('#btnShare');
+  const btnExport = $('#btnExport');
+  const searchInput = $('#searchInput');
 
   const MANIFEST_URL = '/tests/index.json';
+  
+  // Global state
+  let allTests = [];
+  let currentTestId = null;
 
   // Router by hash: #test=slug
   window.addEventListener('hashchange', onRoute);
   document.addEventListener('DOMContentLoaded', () => { onRoute(); });
+  
+  // Search functionality
+  searchInput.addEventListener('input', filterTests);
 
   async function onRoute() {
     const params = new URLSearchParams(location.hash.replace(/^#/, ''));
@@ -136,15 +173,8 @@
     testsGrid.innerHTML = '';
     try {
       const manifest = await fetchJSON(MANIFEST_URL);
-      (manifest.tests || []).forEach(t => {
-        const btn = document.createElement('button');
-        btn.className = 'btn';
-        btn.innerHTML = `<div style="font-weight:700; font-size:16px;">${escapeHtml(t.title)}</div>
-                         <div class="muted" style="font-size:13px; margin-top:6px;">${escapeHtml(t.description || '')}</div>`;
-        btn.onclick = () => { location.hash = `test=${encodeURIComponent(t.id)}`; };
-        testsGrid.appendChild(btn);
-      });
-      if (!testsGrid.children.length) testsGrid.innerHTML = '<div class="muted">В манифесте пока нет тестов.</div>';
+      allTests = manifest.tests || [];
+      renderTestsGrid(allTests);
       setStatus('Готово');
     } catch (e) {
       console.error(e);
@@ -153,7 +183,35 @@
     }
   }
 
+  function renderTestsGrid(tests) {
+    testsGrid.innerHTML = '';
+    tests.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.innerHTML = `<div style="font-weight:700; font-size:16px;">${escapeHtml(t.title)}</div>
+                       <div class="muted" style="font-size:13px; margin-top:6px;">${escapeHtml(t.description || '')}</div>`;
+      btn.onclick = () => { location.hash = `test=${encodeURIComponent(t.id)}`; };
+      testsGrid.appendChild(btn);
+    });
+    if (!testsGrid.children.length) testsGrid.innerHTML = '<div class="muted">В манифесте пока нет тестов.</div>';
+  }
+
+  function filterTests() {
+    const query = searchInput.value.toLowerCase().trim();
+    if (!query) {
+      renderTestsGrid(allTests);
+      return;
+    }
+    
+    const filtered = allTests.filter(test => 
+      test.title.toLowerCase().includes(query) || 
+      (test.description && test.description.toLowerCase().includes(query))
+    );
+    renderTestsGrid(filtered);
+  }
+
   async function openTest(slug) {
+    currentTestId = slug;
     setStatus('Загружаю тест…');
     listView.classList.add('hidden');
     quizView.classList.remove('hidden');
@@ -200,6 +258,7 @@
     btnBack.onclick = () => { location.hash = ''; };
     btnRestart.onclick = () => { step = 0; answers.clear(); renderStep(); };
     btnShare.onclick = () => share();
+    btnExport.onclick = () => exportResult();
 
     function renderStep() {
       const progress = Math.round((answers.size / questions.length) * 100);
@@ -275,6 +334,9 @@
 
       stage.append(box, document.createElement('div'));
       stage.append(chips);
+      
+      // Add comments section
+      addCommentsSection();
     }
 
     async function share() {
@@ -292,6 +354,216 @@
 
   function setStatus(text){ statusPill.textContent = text; }
   function escapeHtml(s){ return String(s).replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch])); }
+
+  // Comments functionality
+  function addCommentsSection() {
+    const commentsSection = document.createElement('div');
+    commentsSection.className = 'comments-section';
+    commentsSection.innerHTML = `
+      <h3 style="margin: 0 0 16px; color: var(--text);">Комментарии</h3>
+      <div id="commentsList"></div>
+      <div class="comment-form">
+        <textarea id="commentInput" class="comment-input" placeholder="Оставьте анонимный комментарий..."></textarea>
+        <button id="commentSubmit" class="comment-submit">Отправить</button>
+      </div>
+    `;
+    
+    stage.appendChild(commentsSection);
+    
+    // Load existing comments
+    loadComments();
+    
+    // Add event listener for new comment
+    const commentInput = document.getElementById('commentInput');
+    const commentSubmit = document.getElementById('commentSubmit');
+    
+    commentSubmit.onclick = () => addComment();
+    commentInput.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        addComment();
+      }
+    });
+  }
+
+  function loadComments() {
+    const commentsList = document.getElementById('commentsList');
+    if (!commentsList) return;
+    
+    const comments = getCommentsForTest(currentTestId);
+    commentsList.innerHTML = '';
+    
+    if (comments.length === 0) {
+      commentsList.innerHTML = '<div class="muted">Пока нет комментариев. Будьте первым!</div>';
+      return;
+    }
+    
+    comments.forEach(comment => {
+      const commentDiv = document.createElement('div');
+      commentDiv.className = 'comment';
+      commentDiv.innerHTML = `
+        <div class="comment-author">Аноним • ${new Date(comment.timestamp).toLocaleString('ru-RU')}</div>
+        <div class="comment-text">${escapeHtml(comment.text)}</div>
+      `;
+      commentsList.appendChild(commentDiv);
+    });
+  }
+
+  function addComment() {
+    const commentInput = document.getElementById('commentInput');
+    const text = commentInput.value.trim();
+    
+    if (!text) return;
+    
+    const comment = {
+      text: text,
+      timestamp: Date.now(),
+      testId: currentTestId
+    };
+    
+    saveComment(comment);
+    commentInput.value = '';
+    loadComments();
+  }
+
+  function getCommentsForTest(testId) {
+    const comments = JSON.parse(localStorage.getItem('quizComments') || '[]');
+    return comments.filter(c => c.testId === testId).sort((a, b) => b.timestamp - a.timestamp);
+  }
+
+  function saveComment(comment) {
+    const comments = JSON.parse(localStorage.getItem('quizComments') || '[]');
+    comments.push(comment);
+    localStorage.setItem('quizComments', JSON.stringify(comments));
+  }
+
+  // Export functionality
+  async function exportResult() {
+    try {
+      // Create a canvas element
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      canvas.width = 800;
+      canvas.height = 600;
+      
+      // Background
+      ctx.fillStyle = '#0b1220';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Title
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 32px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(quizTitle.textContent, canvas.width / 2, 60);
+      
+      // Description
+      ctx.font = '16px Arial';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText(quizDesc.textContent, canvas.width / 2, 90);
+      
+      // Result box
+      const resultBox = document.querySelector('.resultBox');
+      if (resultBox) {
+        const emoji = resultBox.querySelector('div[style*="font-size:36px"]')?.textContent || '✨';
+        const title = resultBox.querySelector('.title')?.textContent || '';
+        const blurb = resultBox.querySelector('.subtitle')?.textContent || '';
+        
+        // Emoji
+        ctx.font = '48px Arial';
+        ctx.fillStyle = '#e2e8f0';
+        ctx.textAlign = 'left';
+        ctx.fillText(emoji, 50, 150);
+        
+        // Title
+        ctx.font = 'bold 24px Arial';
+        ctx.fillText(title, 120, 150);
+        
+        // Blurb
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#94a3b8';
+        const lines = wrapText(ctx, blurb, canvas.width - 140);
+        lines.forEach((line, index) => {
+          ctx.fillText(line, 120, 180 + index * 20);
+        });
+      }
+      
+      // Chips
+      const chips = document.querySelectorAll('.chip');
+      let yPos = 280;
+      chips.forEach((chip, index) => {
+        if (yPos > canvas.height - 50) return;
+        
+        const text = chip.querySelector('span')?.textContent || '';
+        const score = chip.querySelector('strong')?.textContent || '';
+        const isHighlight = chip.classList.contains('highlight');
+        
+        // Background
+        ctx.fillStyle = isHighlight ? '#7c3aed' : '#111827';
+        ctx.fillRect(50, yPos - 20, canvas.width - 100, 30);
+        
+        // Text
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(text, 60, yPos);
+        
+        // Score
+        ctx.textAlign = 'right';
+        ctx.fillText(score, canvas.width - 60, yPos);
+        
+        yPos += 40;
+      });
+      
+      // Footer
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Создано на Quiz Hub', canvas.width / 2, canvas.height - 20);
+      
+      // Convert to blob and copy to clipboard
+      canvas.toBlob(async (blob) => {
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+          ]);
+          alert('Изображение скопировано в буфер обмена!');
+        } catch (err) {
+          // Fallback: download the image
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `quiz-result-${currentTestId}-${Date.now()}.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+          alert('Изображение сохранено!');
+        }
+      });
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Ошибка при экспорте результата');
+    }
+  }
+
+  function wrapText(ctx, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = ctx.measureText(currentLine + ' ' + word).width;
+      if (width < maxWidth) {
+        currentLine += ' ' + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  }
   </script>
 </body>
 </html>
