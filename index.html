@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тесты</title>
+  <meta name="description" content="Топовый сайт с тестами EU" />
+  <style>
+    :root { --bg: #0b1220; --card: #0f172a; --muted: #94a3b8; --text: #e2e8f0; --accent: #7c3aed; --accent2:#22c55e; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: linear-gradient(180deg, #0b1220, #0b1220 40%, #111827); color: var(--text); font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Inter, "SF Pro", system-ui, Arial; }
+    .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+    .header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size: clamp(22px, 3vw, 28px); letter-spacing:.2px; }
+    .brand .logo { width: 28px; height: 28px; display:grid; place-items:center; background:linear-gradient(135deg, var(--accent), #06b6d4); border-radius:10px; box-shadow: 0 8px 24px rgba(124,58,237,.35); }
+    .muted { color: var(--muted); }
+
+    .btn .muted { color: var(--muted); }
+.card { background: radial-gradient(1200px 600px at 10% -10%, rgba(124,58,237,.12), transparent 50%),
+                     radial-gradient(900px 500px at 110% 10%, rgba(34,197,94,.08), transparent 40%),
+                     var(--card); border: 1px solid rgba(148,163,184,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(2,6,23,.35), inset 0 1px 0 rgba(255,255,255,.04); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
+    .btn { background:#111827; color: #ffffff; border:1px solid rgba(148,163,184,.25); padding:12px 14px; border-radius:12px; cursor:pointer; transition:.18s transform, .18s background, .18s border-color, .18s box-shadow; text-align:left; }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(124,58,237,.7); box-shadow: 0 10px 26px rgba(124,58,237,.18); }
+    .btn.primary { background: linear-gradient(180deg, #7c3aed, #6d28d9); border-color: transparent; box-shadow: 0 14px 30px rgba(124,58,237,.35); }
+    .btn.row { display:flex; align-items:center; justify-content:center; text-align:center; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .title { font-size: clamp(18px, 2.2vw, 22px); font-weight: 700; margin: 0; }
+    .subtitle { margin: 8px 0 0; color: var(--muted); }
+    .spacer { height: 14px; }
+    .footer { margin-top: 22px; font-size: 12px; color: var(--muted); text-align:center; }
+    .pill { display:inline-flex; align-items:center; gap:8px; font-size:12px; color: #c7d2fe; background: rgba(124,58,237,.16); border:1px solid rgba(124,58,237,.35); padding:6px 10px; border-radius: 999px; }
+    .hidden { display:none !important; }
+
+    /* Quiz view */
+    .qwrap { display:flex; flex-direction:column; gap:16px; }
+    .qheader { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .progress { height: 8px; background: rgba(148,163,184,.25); border-radius:999px; overflow:hidden; }
+    .progress > div { height: 100%; background: linear-gradient(90deg, var(--accent), #06b6d4); width:0%; transition: width .25s ease; }
+    .choice { background:#0b1220; color: var(--text); border:1px solid rgba(148,163,184,.25); padding:12px 14px; border-radius:14px; cursor:pointer; transition:.16s; text-align:left; }
+    .choice:hover { border-color: rgba(124,58,237,.7); }
+    .choice.active { background: #111827; border-color: var(--accent); }
+    .resultBox { border:1px solid rgba(148,163,184,.25); border-radius:16px; padding:16px; background:#0b1220; }
+    .chips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(1fr, auto));
+      gap: 8px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      white-space: nowrap; /* Changed to prevent wrapping */
+      word-break: normal; /* Changed to prevent breaking long words */
+      overflow: hidden; /* Optional: add if you want to clip overflow instead of scrolling */
+    }
+    .highlight { background: linear-gradient(180deg, #7c3aed, #6d28d9); color:white; border-color: transparent; }
+    code.inline { background: rgba(148,163,184,.15); padding:2px 6px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand"><span class="logo">✨</span> <span>Тесты / Quiz Hub</span></div>
+      <span class="pill" id="status">Готово к загрузке тестов</span>
+    </header>
+
+    <div class="spacer"></div>
+
+    <section class="card" id="listView">
+      <h1 class="title">Выберите тест</h1>
+      <div class="spacer"></div>
+      <div class="grid" id="testsGrid" aria-live="polite"></div>
+    </section>
+
+    <section class="card hidden" id="quizView">
+      <div class="qwrap">
+        <div class="qheader">
+          <div>
+            <h2 class="title" id="quizTitle">Тест</h2>
+            <p class="subtitle" id="quizDesc"></p>
+          </div>
+          <div class="actions">
+            <button class="btn" id="btnBack">← Ко всем тестам</button>
+            <button class="btn" id="btnRestart">↻ Пройти заново</button>
+            <button class="btn" id="btnShare">⧉ Поделиться</button>
+          </div>
+        </div>
+        <div class="progress"><div id="bar"></div></div>
+        <div id="quizStage"></div>
+      </div>
+    </section>
+
+    <p class="footer">Static SPA. © 2025. Говно</p>
+  </div>
+
+  <script>
+  const $ = (sel) => document.querySelector(sel);
+  const listView = $('#listView');
+  const quizView = $('#quizView');
+  const testsGrid = $('#testsGrid');
+  const statusPill = $('#status');
+  const quizTitle = $('#quizTitle');
+  const quizDesc = $('#quizDesc');
+  const stage = $('#quizStage');
+  const bar = $('#bar');
+  const btnBack = $('#btnBack');
+  const btnRestart = $('#btnRestart');
+  const btnShare = $('#btnShare');
+
+  const MANIFEST_URL = '/tests/index.json';
+
+  // Router by hash: #test=slug
+  window.addEventListener('hashchange', onRoute);
+  document.addEventListener('DOMContentLoaded', () => { onRoute(); });
+
+  async function onRoute() {
+    const params = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const slug = params.get('test');
+    if (slug) {
+      await openTest(slug);
+    } else {
+      await renderList();
+    }
+  }
+
+  async function renderList() {
+    quizView.classList.add('hidden');
+    listView.classList.remove('hidden');
+    setStatus('Загружаю манифест…');
+    testsGrid.innerHTML = '';
+    try {
+      const manifest = await fetchJSON(MANIFEST_URL);
+      (manifest.tests || []).forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.innerHTML = `<div style="font-weight:700; font-size:16px;">${escapeHtml(t.title)}</div>
+                         <div class="muted" style="font-size:13px; margin-top:6px;">${escapeHtml(t.description || '')}</div>`;
+        btn.onclick = () => { location.hash = `test=${encodeURIComponent(t.id)}`; };
+        testsGrid.appendChild(btn);
+      });
+      if (!testsGrid.children.length) testsGrid.innerHTML = '<div class="muted">В манифесте пока нет тестов.</div>';
+      setStatus('Готово');
+    } catch (e) {
+      console.error(e);
+      setStatus('Ошибка загрузки манифеста');
+      testsGrid.innerHTML = `<div class="muted">Не удалось загрузить <code>/tests/index.json</code>. Проверьте размещение файлов.</div>`;
+    }
+  }
+
+  async function openTest(slug) {
+    setStatus('Загружаю тест…');
+    listView.classList.add('hidden');
+    quizView.classList.remove('hidden');
+    stage.innerHTML = '';
+    bar.style.width = '0%';
+
+    // Find file from manifest
+    let file;
+    try {
+      const manifest = await fetchJSON(MANIFEST_URL);
+      const item = (manifest.tests || []).find(t => t.id === slug);
+      if (!item) throw new Error('Тест не найден в манифесте');
+      file = item.file;
+    } catch (e) {
+      stage.innerHTML = `<div class="muted">Не удалось найти тест в манифесте. ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+
+    // Load JSON spec
+    let spec;
+    try {
+      spec = await fetchJSON(file);
+    } catch (e) {
+      stage.innerHTML = `<div class="muted">Ошибка загрузки файла теста: ${escapeHtml(file)}</div>`;
+      return;
+    }
+
+    runQuiz(spec);
+  }
+
+  function runQuiz(spec) {
+    const characters = spec.characters || {}; // {key: {title, emoji, blurb}}
+    const questions = spec.questions || [];
+    const keys = Object.keys(characters);
+
+    quizTitle.textContent = spec.title || 'Тест';
+    quizDesc.textContent = spec.description || '';
+
+    const answers = new Map(); // qIndex -> choiceIndex
+    let step = 0;
+
+    renderStep();
+
+    btnBack.onclick = () => { location.hash = ''; };
+    btnRestart.onclick = () => { step = 0; answers.clear(); renderStep(); };
+    btnShare.onclick = () => share();
+
+    function renderStep() {
+      const progress = Math.round((answers.size / questions.length) * 100);
+      bar.style.width = progress + '%';
+
+      if (answers.size === questions.length && questions.length) {
+        return renderResult();
+      }
+
+      const q = questions[step];
+      if (!q) { stage.innerHTML = '<div class="muted">Нет вопросов.</div>'; return; }
+
+      stage.innerHTML = '';
+      const qCard = document.createElement('div');
+      qCard.className = 'card';
+      qCard.innerHTML = `<div class="muted" style="font-size:12px;">Вопрос ${step + 1} / ${questions.length}</div>
+                         <h3 class="title" style="margin:8px 0 10px;">${escapeHtml(q.text)}</h3>`;
+
+      const list = document.createElement('div');
+      list.className = 'grid';
+      (q.choices || []).forEach((ch, idx) => {
+        const b = document.createElement('button');
+        b.className = 'choice';
+        b.textContent = ch.label;
+        if (answers.get(step) === idx) b.classList.add('active');
+        b.onclick = () => { answers.set(step, idx); step = Math.min(step + 1, questions.length); renderStep(); };
+        list.appendChild(b);
+      });
+      qCard.appendChild(list);
+
+      const nav = document.createElement('div');
+      nav.className = 'actions';
+      const back = document.createElement('button'); back.className = 'btn'; back.textContent = '← Назад'; back.onclick = () => { step = Math.max(0, step - 1); renderStep(); };
+      const next = document.createElement('button'); next.className = 'btn primary'; next.textContent = step < questions.length - 1 ? 'Далее →' : 'Показать результат ✨';
+      next.onclick = () => { if (answers.get(step) == null) return; step = Math.min(step + 1, questions.length); renderStep(); };
+      nav.append(back, next);
+
+      stage.append(qCard, document.createElement('div')); stage.append(nav);
+    }
+
+    function renderResult() {
+      // score map
+      const score = Object.fromEntries(keys.map(k => [k, 0]));
+      questions.forEach((q, qi) => {
+        const ci = answers.get(qi);
+        if (ci == null) return;
+        const weights = (q.choices?.[ci]?.weights) || {};
+        for (const k in weights) score[k] = (score[k] || 0) + Number(weights[k] || 0);
+      });
+      const sorted = keys.map(k => ({k, v: score[k] || 0}))
+                         .sort((a,b) => b.v - a.v || keys.indexOf(a.k) - keys.indexOf(b.k));
+      const top = sorted[0];
+
+      stage.innerHTML = '';
+      const box = document.createElement('div');
+      box.className = 'resultBox';
+      box.innerHTML = `<div style="display:flex; gap:12px; align-items:center;">
+          <div style="font-size:36px">${characters[top.k]?.emoji || '✨'}</div>
+          <div>
+            <div class="title" style="margin:0;">${escapeHtml(characters[top.k]?.title || top.k)}</div>
+            <p class="subtitle" style="margin-top:6px;">${escapeHtml(characters[top.k]?.blurb || '')}</p>
+          </div>
+        </div>`;
+
+      const chips = document.createElement('div');
+      chips.className = 'chips';
+      sorted.forEach(({k,v}) => {
+        const chip = document.createElement('div');
+        chip.className = 'chip' + (k === top.k ? ' highlight' : '');
+        chip.innerHTML = `<span>${escapeHtml(characters[k]?.title || k)}</span><strong>${v}</strong>`;
+        chips.appendChild(chip);
+      });
+
+      stage.append(box, document.createElement('div'));
+      stage.append(chips);
+    }
+
+    async function share() {
+      const text = `Прохожу тест \"${spec.title}\" на quiz‑hub. Попробуй: ${location.href}`;
+      try { await navigator.clipboard.writeText(text); alert('Ссылка скопирована в буфер обмена!'); }
+      catch(e){ prompt('Скопируйте вручную:', text); }
+    }
+  }
+
+  async function fetchJSON(url) {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  }
+
+  function setStatus(text){ statusPill.textContent = text; }
+  function escapeHtml(s){ return String(s).replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch])); }
+  </script>
+</body>
+</html>
+

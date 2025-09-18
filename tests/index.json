@@ -1,0 +1,184 @@
+{
+  "tests": [
+    {
+      "id": "naruto",
+      "title": "Кто ты из Наруто?",
+      "description": "Личностный тест по персонажам Наруто",
+      "file": "/tests/naruto.json"
+    },
+    {
+      "id": "where_to_live",
+      "title": "Где бы тебе было заебись жить?",
+      "description": "Краткий тест про идеальное место жительства",
+      "file": "/tests/where_to_live.json"
+    },
+    {
+      "id": "procrastination_style",
+      "title": "Как ты прокрастинируешь?",
+      "description": "Определяем твой коронный стиль откладывать дела",
+      "file": "/tests/procrastination_style.json"
+    },
+    {
+      "id": "anime_archetypes",
+      "title": "Кто ты из анимешных архетипов?",
+      "description": "Цун/ян/куу/дан и прочие «-дере» — кто ты?",
+      "file": "/tests/anime_archetypes.json"
+    },
+    {
+      "id": "russian-fairytales",
+      "title": "Какой ты персонаж из русских сказок?",
+      "description": "Пройди тест и узнай, на кого из героев русских народных сказок ты больше всего похож. Ответь на вопросы честно!",
+      "file": "/tests/russian-fairytales.json"
+    },
+    {
+      "id": "mythical-dragon",
+      "title": "Какой ты мифический дракон?",
+      "description": "Пройди тест и узнай, какой тип дракона отражает твою личность – от огненного воина до мудрого стража лесов.",
+      "file": "/tests/mythical-dragon.json"
+    },
+    {
+      "id": "inoplanetnyj-ovosch-ubijca",
+      "title": "Какой ты инопланетный овощ-убийца?",
+      "description": "Узнай, какой безумный овощ с далёкой планеты, жаждущий крови и хаоса, прячется в твоей душе. Этот тест превратит твою скучную жизнь в овощной апокалипсис!",
+      "file": "/tests/inoplanetnyj-ovosch-ubijca.json"
+    },
+    {
+      "id": "mad-ingredient-in-space-witch-soup",
+      "title": "Какой ты безумный ингредиент в супе космической ведьмы?",
+      "description": "Узнай, какой абсурдный компонент ты бы был в вареве, которое вызывает галлюцинации у астронавтов и заставляет планеты танцевать диско.",
+      "file": "/tests/mad-ingredient-in-space-witch-soup.json"
+    },
+    {
+      "id": "flying-toilet",
+      "title": "Какой ты вид летающего унитаза в параллельной вселенной?",
+      "description": "Пройди тест и узнай, какой безумный летающий унитаз отражает твою сущность в мире, где сантехника правит небом и поет рэп о канализации.",
+      "file": "/tests/flying-toilet.json"
+    },
+    {
+      "id": "among_us",
+      "title": "Какой ты персонаж из Among Us?",
+      "description": "Пройди этот тест и узнай, какой цвет из популярной игры Among Us лучше всего соответствует твоему характеру и стилю игры.",
+      "file": "/tests/among_us.json"
+    },
+    {
+      "id": "genshin-impact-char",
+      "title": "Какой ты персонаж из Genshin Impact?",
+      "description": "Пройди тест и узнай, какой герой из мира Тейвата больше всего похож на тебя по характеру и стилю жизни.",
+      "file": "/tests/genshin-impact-char.json"
+    },
+    {
+      "id": "attack-on-titan",
+      "title": "Какой ты персонаж из 'Атаки Титанов'?",
+      "description": "Пройди тест и узнай, на кого из героев аниме 'Атака Титанов' ты похож больше всего. Выбери варианты, которые отражают твой характер и предпочтения!",
+      "file": "/tests/attack-on-titan.json"
+    },
+    {
+      "id": "death-note-character",
+      "title": "Какой ты персонаж из Death Note?",
+      "description": "Узнай, на кого из героев аниме 'Death Note' ты похож больше всего по характеру и поведению.",
+      "file": "/tests/death-note-character.json"
+    },
+    {
+      "id": "rpg-class",
+      "title": "Какой ты класс в RPG?",
+      "description": "Пройди тест и узнай, какой класс персонажа в ролевых играх подходит твоему стилю игры и характеру.",
+      "file": "/tests/rpg-class.json"
+    },
+    {
+      "id": "tip-programmista",
+      "title": "Какой ты тип программиста?",
+      "description": "Этот тест поможет определить, какой стиль программирования соответствует твоей личности и предпочтениям в гик-культуре компьютеров и разработки.",
+      "file": "/tests/tip-programmista.json"
+    },
+    {
+      "id": "kakoy-ty-tip-geymera",
+      "title": "Какой ты тип геймера?",
+      "description": "Узнай, к какому типу игроков в видеоигры ты относишься, основываясь на своих привычках и предпочтениях в гейминге.",
+      "file": "/tests/kakoy-ty-tip-geymera.json"
+    },
+    {
+      "id": "kakoi-ty-boss-iz-dark-souls",
+      "title": "Какой ты босс из Dark Souls?",
+      "description": "Узнай, какой легендарный босс из серии Dark Souls отражает твою личность и стиль борьбы с трудностями.",
+      "file": "/tests/kakoi-ty-boss-iz-dark-souls.json"
+    },
+    {
+      "id": "kakoy-ty-unit-v-starcraft",
+      "title": "Какой ты юнит в StarCraft?",
+      "description": "Пройди тест и узнай, какой юнит из вселенной StarCraft лучше всего отражает твой стиль игры и характер в стратегических битвах.",
+      "file": "/tests/kakoy-ty-unit-v-starcraft.json"
+    },
+    {
+      "id": "jojo-stand",
+      "title": "Какой ты стенд из JoJo's Bizarre Adventure?",
+      "description": "Пройди тест и узнай, какой стенд из вселенной JoJo's Bizarre Adventure лучше всего отражает твой характер и способности. Это веселый способ погрузиться в мир bizarre приключений!",
+      "file": "/tests/jojo-stand.json"
+    },
+    {
+      "id": "kakoy-ty-vid-ii-v-sci-fi",
+      "title": "Какой ты вид ИИ в sci-fi?",
+      "description": "Узнай, каким искусственным интеллектом ты бы стал в мире научной фантастики: от полезного помощника до всемогущего разрушителя.",
+      "file": "/tests/kakoy-ty-vid-ii-v-sci-fi.json"
+    },
+    {
+      "id": "minecraft-mod",
+      "title": "Какой ты мод в Minecraft?",
+      "description": "Пройди этот тест, чтобы узнать, какой тип модификации для Minecraft лучше всего соответствует твоей личности и стилю игры.",
+      "file": "/tests/minecraft-mod.json"
+    },
+    {
+      "id": "kakoy-ty-chempion-iz-league-of-legends",
+      "title": "Какой ты чемпион из League of Legends?",
+      "description": "Пройди тест и узнай, какой чемпион из LoL лучше всего соответствует твоей личности и стилю игры.",
+      "file": "/tests/kakoy-ty-chempion-iz-league-of-legends.json"
+    },
+    {
+      "id": "kakoi-ty-vid-v-the-elder-scrolls",
+      "title": "Какой ты вид в The Elder Scrolls?",
+      "description": "Узнай, к какой расе из вселенной The Elder Scrolls ты ближе всего по характеру и предпочтениям. Тест основан на чертах, типичных для каждой расы в играх серии.",
+      "file": "/tests/kakoi-ty-vid-v-the-elder-scrolls.json"
+    },
+    {
+      "id": "kakoi-ty-mekh-iz-anime",
+      "title": "Какой ты мех из аниме?",
+      "description": "Пройди тест и узнай, какой знаменитый механический воин из аниме соответствует твоему стилю и характеру. От мощных гигантов до ловких бойцов — найди своего идеального меха!",
+      "file": "/tests/kakoi-ty-mekh-iz-anime.json"
+    },
+    {
+      "id": "programming-language",
+      "title": "Какой ты язык программирования?",
+      "description": "Пройди тест и узнай, какой язык программирования лучше всего отражает твою личность и стиль мышления в мире кодинга.",
+      "file": "/tests/programming-language.json"
+    },
+    {
+      "id": "cyberpunk-archetype",
+      "title": "Какой ты архетип в киберпанк-RPG?",
+      "description": "Узнай, какой тип персонажа в мире киберпанка, полного хакеров, корпораций и уличных самураев, тебе ближе всего.",
+      "file": "/tests/cyberpunk-archetype.json"
+    },
+    {
+      "id": "mortal-kombat-character",
+      "title": "Какой ты персонаж из Mortal Kombat?",
+      "description": "Узнай, какой боец из легендарной серии файтингов Mortal Kombat лучше всего отражает твой стиль и характер в битве.",
+      "file": "/tests/mortal-kombat-character.json"
+    },
+    {
+      "id": "vampire-clan",
+      "title": "Какой ты клан из Vampire: The Masquerade?",
+      "description": "Пройди тест и узнай, к какому клану вампиров из мира тьмы ты ближе всего по характеру и стилю жизни.",
+      "file": "/tests/vampire-clan.json"
+    },
+    {
+      "id": "kakoy-ty-kosmicheskiy-korabl",
+      "title": "Какой ты космический корабль?",
+      "description": "Пройди тест и узнай, какой знаменитый космический корабль из sci-fi вселенных соответствует твоему стилю жизни и характеру.",
+      "file": "/tests/kakoy-ty-kosmicheskiy-korabl.json"
+    },
+    {
+      "id": "one-piece-character",
+      "title": "Кто ты из One Piece?",
+      "description": "Узнай, какой персонаж из пиратского аниме One Piece лучше всего отражает твою личность. Ответь на вопросы и погрузись в мир морских приключений!",
+      "file": "/tests/one-piece-character.json"
+    }
+  ]
+}
