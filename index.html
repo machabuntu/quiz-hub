@@ -256,16 +256,22 @@
     renderStep();
 
     btnBack.onclick = () => { location.hash = ''; };
-    btnRestart.onclick = () => { step = 0; answers.clear(); renderStep(); };
+    btnRestart.onclick = () => { step = 0; answers.clear(); btnExport.style.display = 'none'; renderStep(); };
     btnShare.onclick = () => share();
     btnExport.onclick = () => exportResult();
+    
+    // Hide export button initially
+    btnExport.style.display = 'none';
 
     function renderStep() {
       const progress = Math.round((answers.size / questions.length) * 100);
       bar.style.width = progress + '%';
 
       if (answers.size === questions.length && questions.length) {
+        btnExport.style.display = 'inline-block';
         return renderResult();
+      } else {
+        btnExport.style.display = 'none';
       }
 
       const q = questions[step];
